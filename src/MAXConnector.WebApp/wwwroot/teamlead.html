@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Team Lead — MAX Shop Floor</title>
+    <link rel="stylesheet" href="/css/app.css" />
+    <style>
+        /* ── Team Lead extras ─────────────────────────────────── */
+        .tl-header-nav {
+            font-size: .8rem; color: rgba(255,255,255,.75);
+            text-decoration: none; margin-left: auto;
+            padding: 4px 10px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,.3);
+        }
+        .tl-header-nav:hover { background: rgba(255,255,255,.1); }
+        .tl-sign-in-sub { font-size: .9rem; color: var(--gray-500); margin-bottom: 24px; }
+        .order-lookup-row { display: flex; gap: 8px; }
+        .order-lookup-row input { flex: 1; }
+        .order-lookup-row .btn { flex-shrink: 0; padding: 12px 20px; }
+
+        /* ── Order card ──────────────────────────────────────── */
+        .tl-order-card {
+            background: #fff; border-radius: var(--radius);
+            padding: 14px 16px; margin-bottom: 16px;
+            box-shadow: var(--shadow); border-left: 4px solid var(--blue);
+        }
+        .tl-order-card .part { font-weight: 700; font-size: 1.05rem; }
+        .tl-order-card .desc { color: var(--gray-500); font-size: .9rem; margin-top: 2px; }
+        .tl-order-card .meta { display: flex; gap: 16px; margin-top: 8px; font-size: .85rem; flex-wrap: wrap; }
+        .tl-order-card .meta span { color: var(--gray-500); }
+        .tl-order-card .meta strong { color: var(--gray-900); margin-left: 4px; }
+
+        /* ── Operation button group ──────────────────────────── */
+        .op-btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+        .op-placeholder { color: var(--gray-500); font-size: .9rem; padding: 8px 0; }
+        .op-btn {
+            width: 100%; background: #fff;
+            border: 2px solid var(--gray-200); border-radius: var(--radius);
+            padding: 14px 16px; cursor: pointer; text-align: left;
+            transition: border-color .12s, background .12s;
+            display: flex; align-items: center; gap: 12px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .op-btn:active { background: var(--gray-50); }
+        .op-btn.is-selected { border-color: var(--blue); background: #eff6ff; }
+        .op-btn.is-done { opacity: .75; }
+        .op-btn-seq { font-size: 1rem; font-weight: 700; color: var(--gray-700); min-width: 44px; }
+        .op-btn.is-selected .op-btn-seq { color: var(--blue); }
+        .op-btn-body { flex: 1; min-width: 0; }
+        .op-btn-desc {
+            font-size: .95rem; font-weight: 600; color: var(--gray-900);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .op-btn-wc { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
+        .op-btn-badge {
+            font-size: .7rem; font-weight: 700; padding: 3px 8px;
+            border-radius: 6px; white-space: nowrap;
+        }
+        .op-badge-active  { background: #dbeafe; color: #1d4ed8; }
+        .op-badge-done    { background: #d1fae5; color: #065f46; }
+        .op-badge-pending { background: var(--gray-100); color: var(--gray-500); }
+
+        /* ── Options ─────────────────────────────────────────── */
+        .options-box {
+            background: var(--gray-50); border: 1px solid var(--gray-200);
+            border-radius: var(--radius); padding: 14px 16px; margin-top: 4px;
+        }
+        .options-box .opt-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+        .options-box .opt-row + .opt-row { border-top: 1px solid var(--gray-200); }
+        .options-box input[type="checkbox"] {
+            width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; accent-color: var(--blue);
+        }
+        .options-box label { font-size: .95rem; color: var(--gray-700); cursor: pointer; flex: 1; margin: 0; }
+        .stockroom-row { display: none; padding: 6px 0 2px 30px; }
+        .stockroom-row input { width: 180px; padding: 10px 14px; font-size: .95rem; }
+
+        /* ── Result card ─────────────────────────────────────── */
+        .result-card {
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-left: 4px solid var(--green); border-radius: var(--radius);
+            padding: 14px 16px; margin-bottom: 16px; display: none;
+        }
+        .result-card .result-title { font-weight: 700; color: var(--green); margin-bottom: 4px; }
+        .result-card .result-detail { font-size: .9rem; color: var(--gray-700); }
+
+        .tl-form-section { max-width: 580px; margin: 0 auto; }
+        .tl-submit-row { display: flex; gap: 10px; margin-top: 20px; }
+        .tl-submit-row .btn { flex: 1; }
+
+        /* ── Numpad inputs — hide browser chrome ─────────────── */
+        input.numpad-input {
+            cursor: pointer; caret-color: transparent;
+        }
+        input.numpad-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+        }
+
+        /* ── Numpad overlay ──────────────────────────────────── */
+        .numpad-overlay {
+            position: fixed; inset: 0; z-index: 300;
+            background: rgba(0,0,0,.4);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        .numpad-sheet {
+            background: var(--gray-100); width: 100%; max-width: 440px;
+            border-radius: 20px 20px 0 0;
+            padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+            animation: slideUp .2s ease-out;
+        }
+        .numpad-header {
+            background: #fff; padding: 16px 20px 14px;
+            border-bottom: 1px solid var(--gray-200);
+            border-radius: 20px 20px 0 0;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        .numpad-label { font-size: .9rem; color: var(--gray-500); font-weight: 500; flex: 1; }
+        .numpad-display {
+            font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums;
+            color: var(--gray-900); min-width: 120px; text-align: right; letter-spacing: 1px;
+        }
+        .numpad-display.empty { color: var(--gray-300); }
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 74px);
+            gap: 6px; padding: 10px 10px 14px;
+        }
+        .nk {
+            background: #fff; border: none; border-radius: 12px;
+            font-size: 1.75rem; font-weight: 500; color: var(--gray-900);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            -webkit-tap-highlight-color: transparent;
+            transition: background .08s, transform .08s;
+            user-select: none; -webkit-user-select: none;
+        }
+        .nk:active { background: var(--gray-200); transform: scale(.93); }
+        .nk-action { background: var(--gray-200); color: var(--gray-700); font-size: 1.3rem; }
+        .nk-action:active { background: var(--gray-300); }
+        .nk-done {
+            background: var(--green); color: #fff;
+            font-size: 1.05rem; font-weight: 700;
+            flex-direction: column; gap: 3px;
+        }
+        .nk-done:active { background: #15803d; }
+        .nk-done-check { font-size: 1.5rem; line-height: 1; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <button class="header-btn" onclick="tlSignOut()" id="btnTlSignOut" style="display:none;" title="Sign out">&#8592;</button>
+        <h1>Team Lead Post</h1>
+        <div class="header-right" style="display:flex;align-items:center;gap:8px;">
+            <span id="tlBadge" class="badge" style="display:none;"></span>
+            <a href="/index.html" class="tl-header-nav">Home</a>
+        </div>
+    </header>
+
+    <!-- ── Screen 1: Sign in ─────────────────────────────────── -->
+    <div id="screenSignIn" class="screen active">
+        <div class="center-card">
+            <h2>Team Lead Sign In</h2>
+            <p class="tl-sign-in-sub">Enter your badge to get started.</p>
+            <label for="inputTlEmpId">Badge / Employee ID</label>
+            <input type="text" id="inputTlEmpId" inputmode="numeric"
+                   placeholder="Scan or type your badge" autofocus
+                   onkeydown="if(event.key==='Enter') tlSignIn()" />
+            <button class="btn btn-primary btn-lg" onclick="tlSignIn()">Sign In</button>
+        </div>
+    </div>
+
+    <!-- ── Screen 2: Post form ───────────────────────────────── -->
+    <div id="screenPost" class="screen">
+        <div class="tl-form-section">
+
+            <!-- Last result banner -->
+            <div id="resultCard" class="result-card">
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-detail" id="resultDetail"></div>
+            </div>
+
+            <!-- Order lookup -->
+            <div class="form-group">
+                <label for="inputTlOrder">Shop Order</label>
+                <div class="order-lookup-row">
+                    <input type="text" id="inputTlOrder" inputmode="numeric"
+                           placeholder="Order number"
+                           onkeydown="if(event.key==='Enter') tlLookupOrder()" />
+                    <button class="btn btn-secondary" onclick="tlLookupOrder()">Look Up</button>
+                </div>
+            </div>
+
+            <!-- Order info (shown after lookup) -->
+            <div id="tlOrderCard" class="tl-order-card" style="display:none;">
+                <div class="part" id="tlOrderPart"></div>
+                <div class="desc" id="tlOrderDesc"></div>
+                <div class="meta">
+                    <span>Order<strong id="tlOrderNum"></strong></span>
+                    <span>Qty<strong id="tlOrderQty"></strong></span>
+                    <span>Due<strong id="tlOrderDue"></strong></span>
+                    <span>Status<strong id="tlOrderStatus"></strong></span>
+                </div>
+            </div>
+
+            <!-- Operation -->
+            <div class="form-group">
+                <label>Operation</label>
+                <div id="opButtonGroup" class="op-btn-group">
+                    <p class="op-placeholder">Look up an order to see operations.</p>
+                </div>
+            </div>
+
+            <!-- Employee who did the work -->
+            <div class="form-group">
+                <label for="inputTlWorker">Worker Employee ID</label>
+                <input type="text" id="inputTlWorker" inputmode="numeric"
+                       placeholder="Employee who performed the work" />
+                <div id="workerName" style="font-size:.85rem;color:var(--gray-500);margin-top:4px;min-height:1.2em;"></div>
+            </div>
+
+            <!-- Work date -->
+            <div class="form-group">
+                <label for="inputTlDate">Work Date</label>
+                <input type="date" id="inputTlDate" />
+            </div>
+
+            <!-- Qty row -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inputTlQty">Pieces Completed</label>
+                    <input type="text" id="inputTlQty" class="numpad-input"
+                           inputmode="none" placeholder="0" autocomplete="off" readonly
+                           onfocus="openNumpad('inputTlQty')" onclick="openNumpad('inputTlQty')" />
+                </div>
+                <div class="form-group">
+                    <label for="inputTlScrap">Scrap Qty</label>
+                    <input type="text" id="inputTlScrap" class="numpad-input"
+                           inputmode="none" placeholder="0" autocomplete="off" readonly
+                           onfocus="openNumpad('inputTlScrap')" onclick="openNumpad('inputTlScrap')" />
+                </div>
+            </div>
+
+            <!-- Hours row -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inputTlRun">Run Hours</label>
+                    <input type="text" id="inputTlRun" class="numpad-input"
+                           inputmode="none" placeholder="0" autocomplete="off" readonly
+                           onfocus="openNumpad('inputTlRun')" onclick="openNumpad('inputTlRun')" />
+                </div>
+                <div class="form-group">
+                    <label for="inputTlSetup">Setup Hours</label>
+                    <input type="text" id="inputTlSetup" class="numpad-input"
+                           inputmode="none" placeholder="0" autocomplete="off" readonly
+                           onfocus="openNumpad('inputTlSetup')" onclick="openNumpad('inputTlSetup')" />
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="form-group">
+                <label>Options</label>
+                <div class="options-box">
+                    <div class="opt-row">
+                        <input type="checkbox" id="chkTlComplete" />
+                        <label for="chkTlComplete">Mark operation complete (sends P/C to MRP)</label>
+                    </div>
+                    <div class="opt-row" id="receiveRow" style="display:none;">
+                        <input type="checkbox" id="chkTlReceive" checked />
+                        <label for="chkTlReceive">Receive finished parts into inventory (R/S)</label>
+                    </div>
+                    <div class="stockroom-row" id="stockroomRow">
+                        <input type="text" id="inputTlStock"
+                               placeholder="Stockroom (blank = default)" maxlength="6" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="tl-submit-row">
+                <button class="btn btn-secondary" onclick="tlResetForm()">Clear</button>
+                <button class="btn btn-success" onclick="tlSubmit()">Post to MAX</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Numpad overlay (custom numeric keyboard for tablet) -->
+    <div id="numpadOverlay" class="numpad-overlay" style="display:none;" onclick="numpadBackdrop(event)">
+        <div class="numpad-sheet" onclick="event.stopPropagation()">
+            <div class="numpad-header">
+                <span id="numpadLabel" class="numpad-label">Value</span>
+                <span id="numpadDisplay" class="numpad-display empty">—</span>
+            </div>
+            <div class="numpad-grid">
+                <button class="nk" style="grid-area:1/1" onclick="numpadPress('7')">7</button>
+                <button class="nk" style="grid-area:1/2" onclick="numpadPress('8')">8</button>
+                <button class="nk" style="grid-area:1/3" onclick="numpadPress('9')">9</button>
+                <button class="nk nk-action" style="grid-area:1/4" onclick="numpadPress('back')">⌫</button>
+                <button class="nk" style="grid-area:2/1" onclick="numpadPress('4')">4</button>
+                <button class="nk" style="grid-area:2/2" onclick="numpadPress('5')">5</button>
+                <button class="nk" style="grid-area:2/3" onclick="numpadPress('6')">6</button>
+                <button class="nk nk-done" style="grid-area:2/4/5/5" onclick="closeNumpad()">
+                    <span class="nk-done-check">✓</span>Done
+                </button>
+                <button class="nk" style="grid-area:3/1" onclick="numpadPress('1')">1</button>
+                <button class="nk" style="grid-area:3/2" onclick="numpadPress('2')">2</button>
+                <button class="nk" style="grid-area:3/3" onclick="numpadPress('3')">3</button>
+                <button class="nk" style="grid-area:4/1/5/3" onclick="numpadPress('0')">0</button>
+                <button class="nk" style="grid-area:4/3" onclick="numpadPress('.')">.</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading" class="loading" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="/js/teamlead.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MAXConnector\MAXConnector.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x86</PlatformTarget>
+    <RootNamespace>MAXConnector.Sample</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Required for dynamic dispatch against the COM IDispatch interface -->
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+  <Target Name="CopyVendorDlls" AfterTargets="Build">
+    <ItemGroup>
+      <VendorDll Include="$(MSBuildThisFileDirectory)..\MAXConnector\lib\*" />
+      <!-- .NET COM assemblies loaded by MaxUpdateXML.dll via mscoree.dll:
+           HKLM InprocServer32 has no CodeBase, CLR probes the app directory -->
+      <NetComDll Include="C:\EXACT\RMCLIENT\EFW\EXACTRMEnc.dll" />
+      <NetComDll Include="C:\EXACT\RMCLIENT\EFW\ERMRemCl.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(VendorDll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NetComDll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="Exists('C:\EXACT\RMCLIENT\EFW\EXACTRMEnc.dll')" />
+  </Target>
+
+</Project>

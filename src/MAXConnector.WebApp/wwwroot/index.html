@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>MAX Shop Floor</title>
+    <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <button id="btnBack" class="header-btn" onclick="goBack()" style="display:none;">&#8592;</button>
+        <h1 id="headerTitle">Shop Floor</h1>
+        <div class="header-right">
+            <span id="employeeBadge" class="badge" style="display:none;"></span>
+        </div>
+    </header>
+
+    <!-- Employee Login Screen -->
+    <div id="screenLogin" class="screen active">
+        <div class="center-card">
+            <h2>Employee Sign In</h2>
+            <label for="inputEmployeeId">Employee ID</label>
+            <input type="text" id="inputEmployeeId" inputmode="numeric" placeholder="Enter your Employee ID" autofocus />
+            <button class="btn btn-primary btn-lg" onclick="signIn()">Sign In</button>
+        </div>
+        <div style="max-width:400px;margin:0 auto 16px;display:flex;gap:10px;padding:0 16px;">
+            <a href="/workstation.html" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">Workstation Kiosk</a>
+            <a href="/teamlead.html" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">Team Lead Post</a>
+            <a href="/materialhandler.html" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">Material Handler</a>
+        </div>
+    </div>
+
+    <!-- Order List Screen -->
+    <div id="screenOrders" class="screen">
+        <div class="search-bar">
+            <input type="search" id="inputSearch" placeholder="Search orders, parts..." oninput="debounceSearch()" />
+        </div>
+        <div id="orderList" class="list"></div>
+    </div>
+
+    <!-- Order Detail Screen -->
+    <div id="screenDetail" class="screen">
+        <div class="order-info" id="orderInfo"></div>
+        <h3 class="section-title">Operations</h3>
+        <div id="operationList" class="list"></div>
+
+        <div id="timeEntriesSection" style="display:none;">
+            <div class="section-header">
+                <h3 class="section-title">Logged Time Entries</h3>
+                <button class="btn btn-success btn-sm" id="btnPostAll" onclick="postAllPending()" style="display:none;">Post All to MAX</button>
+            </div>
+            <div id="timeEntryList" class="list"></div>
+        </div>
+    </div>
+
+    <!-- Log Work Modal -->
+    <div id="modalLogWork" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2 id="logWorkTitle">Log Work</h2>
+            <div class="form-group">
+                <label for="inputWorkDate">Work Date</label>
+                <input type="date" id="inputWorkDate" />
+            </div>
+            <div class="form-group">
+                <label for="inputQty">Pieces Completed</label>
+                <input type="number" id="inputQty" inputmode="decimal" value="0" min="0" step="1" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inputRunTime">Run Time (hrs)</label>
+                    <input type="number" id="inputRunTime" inputmode="decimal" value="0" min="0" step="0.25" />
+                </div>
+                <div class="form-group">
+                    <label for="inputSetupTime">Setup Time (hrs)</label>
+                    <input type="number" id="inputSetupTime" inputmode="decimal" value="0" min="0" step="0.25" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputScrap">Scrap Qty</label>
+                <input type="number" id="inputScrap" inputmode="decimal" value="0" min="0" step="1" />
+            </div>
+            <div class="form-group">
+                <label for="inputNotes">Notes (optional)</label>
+                <input type="text" id="inputNotes" placeholder="" />
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modalLogWork')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitTimeEntry(false)">Save</button>
+                <button class="btn btn-success" onclick="submitTimeEntry(true)">Save &amp; Post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading" class="loading" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

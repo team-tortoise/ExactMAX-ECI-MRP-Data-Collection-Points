@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+    <RootNamespace>MAXConnector</RootNamespace>
+    <AssemblyName>MAXConnector</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Copy vendor DLLs flat into the output directory so P/Invoke can find them -->
+  <ItemGroup>
+    <!-- Required for dynamic dispatch against the COM IDispatch interface -->
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+
+  <Target Name="CopyVendorDlls" AfterTargets="Build">
+    <ItemGroup>
+      <VendorDll Include="lib\*" />
+      <NetComDll Include="C:\EXACT\RMCLIENT\EFW\EXACTRMEnc.dll" />
+      <NetComDll Include="C:\EXACT\RMCLIENT\EFW\ERMRemCl.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(VendorDll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NetComDll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="Exists('C:\EXACT\RMCLIENT\EFW\EXACTRMEnc.dll')" />
+  </Target>
+
+</Project>

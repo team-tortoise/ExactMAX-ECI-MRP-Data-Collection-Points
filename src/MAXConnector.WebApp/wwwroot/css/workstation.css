@@ -1,0 +1,197 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   workstation.css  –  Kiosk / workstation-specific styles
+   Designed for Bluetooth barcode scanner input at shop floor stations.
+   Extends /css/app.css (imported first).
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Full-height centred layout for the sign-in screen ───────────────── */
+.ws-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100dvh - 60px);
+    padding: 16px;
+}
+
+.ws-hero-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 460px;
+}
+.ws-hero-icon {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+.ws-hero-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    color: var(--gray-900);
+}
+.ws-hint {
+    color: var(--gray-500);
+    font-size: 1rem;
+    margin-bottom: 28px;
+}
+
+/* ── Large scanner-optimised input ───────────────────────────────────── */
+.ws-scan-input {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 3px;
+    border: 3px solid var(--gray-200);
+    border-radius: var(--radius);
+    background: #fff;
+    margin-bottom: 16px;
+    transition: border-color .15s, box-shadow .15s;
+}
+.ws-scan-input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+}
+
+/* Flash green briefly after a successful scan */
+.ws-scan-input.scan-ok {
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, .2);
+    transition: none;
+}
+
+/* ── Active clock banner (green dark card) ────────────────────────────── */
+.ws-active-banner {
+    background: #052e16;
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    border-left: 6px solid var(--green);
+}
+.ws-banner-label {
+    font-size: .75rem;
+    letter-spacing: 3px;
+    color: #86efac;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.ws-banner-order {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.ws-banner-part {
+    font-size: .9rem;
+    color: #d1d5db;
+    margin-top: 4px;
+}
+.ws-banner-timer {
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-variant-numeric: tabular-nums;
+    color: #4ade80;
+    text-align: center;
+    margin: 20px 0;
+    line-height: 1;
+}
+.ws-banner-actions {
+    display: flex;
+    gap: 12px;
+}
+.ws-btn-lg {
+    flex: 1;
+    padding: 16px;
+    font-size: 1.05rem;
+}
+
+/* ── Idle state banner ────────────────────────────────────────────────── */
+.ws-idle-banner {
+    background: #fff;
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 1rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.ws-idle-icon { font-size: 1.8rem; }
+
+/* ── Order scan row ───────────────────────────────────────────────────── */
+.ws-scan-row { margin-top: 4px; }
+.ws-scan-label {
+    display: block;
+    text-align: center;
+    font-size: .78rem;
+    letter-spacing: 3px;
+    font-weight: 700;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+}
+
+/* ── Order detail banner on the order screen ─────────────────────────── */
+.ws-order-banner {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+}
+.ws-section-label {
+    font-size: .78rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: var(--gray-500);
+    margin-bottom: 12px;
+    padding: 0 2px;
+}
+
+/* ── Operation cards on the order screen ────────────────────────────── */
+.ws-op-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.ws-op-card.is-active {
+    border-left-color: var(--green);
+    background: #f0fdf4;
+}
+.ws-op-seq  { font-size: 1.05rem; font-weight: 700; }
+.ws-op-desc { font-size: .9rem; color: var(--gray-500); margin-top: 2px; }
+.ws-op-meta { font-size: .8rem; color: var(--gray-500); margin-top: 4px; }
+.ws-op-btns { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+
+/* ── Clock-out modal summary block ───────────────────────────────────── */
+.ws-co-summary {
+    background: var(--gray-50);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+.ws-co-order  { font-size: 1.15rem; font-weight: 700; }
+.ws-co-part   { font-size: .85rem; color: var(--gray-500); margin-top: 2px; }
+.ws-co-timer  {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 12px;
+}

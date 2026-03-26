@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Material Handler &mdash; MAX Shop Floor</title>
+    <link rel="stylesheet" href="/css/app.css" />
+    <style>
+        .mh-hero-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .mh-hero-icon { font-size: 3rem; margin-bottom: 12px; }
+        .mh-center {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 56px);
+            padding: 24px 16px;
+        }
+        .mh-hint {
+            font-size: .9rem;
+            color: var(--gray-500);
+            margin-bottom: 20px;
+        }
+        .mh-form-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 20px 16px;
+            box-shadow: var(--shadow);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .result-card {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .result-card .result-title {
+            font-weight: 700;
+            color: #16a34a;
+            font-size: 1rem;
+        }
+        .result-card .result-detail {
+            font-size: .9rem;
+            color: var(--gray-700);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <header class="app-header">
+        <a href="/index.html" class="header-btn" title="Back to Shop Floor"
+           style="text-decoration:none;">&#8592;</a>
+        <h1>Material Handler</h1>
+        <div class="header-right" style="display:flex;align-items:center;gap:8px;">
+            <span id="mhBadge" class="badge" style="display:none;"></span>
+            <button id="btnMhSignOut" class="header-btn" onclick="mhSignOut()"
+                    style="display:none;" title="Sign Out">&#x2715;</button>
+        </div>
+    </header>
+
+    <!-- ── Screen: Sign In ────────────────────────────────── -->
+    <div id="screenSignIn" class="screen active">
+        <div class="mh-center">
+            <div class="mh-hero-card">
+                <div class="mh-hero-icon">&#128230;</div>
+                <h2>Material Handler</h2>
+                <p class="mh-hint">Scan your badge or enter your Employee ID to receive parts</p>
+                <input type="text" id="inputMhEmpId" inputmode="numeric"
+                       placeholder="Employee ID" autocomplete="off"
+                       class="ws-scan-input" autofocus />
+                <button class="btn btn-primary btn-xl" onclick="mhSignIn()">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Screen: Receive Form ───────────────────────────── -->
+    <div id="screenReceive" class="screen">
+        <div style="padding: 16px; max-width: 480px; margin: 0 auto;">
+
+            <!-- Result feedback -->
+            <div id="resultCard" class="result-card">
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-detail" id="resultDetail"></div>
+            </div>
+
+            <div class="mh-form-card">
+                <h3 style="margin:0 0 16px;font-size:1.1rem;">Receive Finished Parts</h3>
+
+                <!-- Order number -->
+                <div class="form-group">
+                    <label>Work Order</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="inputMhOrder" inputmode="numeric"
+                               placeholder="Scan or type order number"
+                               autocomplete="off" style="flex:1;" />
+                        <button class="btn btn-secondary" onclick="mhClearOrder()"
+                                style="flex-shrink:0;padding:10px 14px;">&#x2715;</button>
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-group">
+                    <label for="inputMhQty">Quantity to Receive</label>
+                    <input type="number" id="inputMhQty" inputmode="decimal"
+                           min="1" step="1" placeholder="0" />
+                </div>
+
+                <!-- Stockroom (optional) -->
+                <div class="form-group">
+                    <label for="inputMhStock"
+                           style="font-size:.85rem;color:var(--gray-500);">
+                        Stockroom <span style="font-weight:400;">(leave blank for default)</span>
+                    </label>
+                    <input type="text" id="inputMhStock" inputmode="text"
+                           placeholder="Default stockroom" autocomplete="off"
+                           style="text-transform:uppercase;" />
+                </div>
+
+                <button class="btn btn-primary btn-lg" style="width:100%;" onclick="mhSubmit()">
+                    &#128230; Receive to Stock
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Toast ──────────────────────────────────────────── -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ── Loading overlay ────────────────────────────────── -->
+    <div id="loading" class="loading" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="/js/materialhandler.js"></script>
+</body>
+</html>

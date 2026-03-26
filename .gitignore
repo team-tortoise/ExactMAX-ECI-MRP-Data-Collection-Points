@@ -1,0 +1,17 @@
+## Artifacts the vendor DLLs should be placed in
+src/MAXConnector/lib/
+
+## Build outputs
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+.vs/
+
+## Rider
+.idea/
+
+## Log files written by the connector
+*.log

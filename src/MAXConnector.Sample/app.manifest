@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Registration-free COM manifest for MAXConnector.Sample.
+  Tells Windows to find XMLWrapperClass inside the local MaxUpdateXML.dll
+  without needing regsvr32. MaxUpdateXML.dll must be in the same folder as
+  the EXE (it is — the CopyVendorDlls MSBuild target puts it there).
+
+  XMLWrapperClass CLSID:  {34E27738-7E0B-474F-AC7F-F767840B265B}
+  _XMLWrapper IID:        {117FC65B-27E9-4533-942F-ECFBE0FAAC5E}
+  Source: Interop.MaxUpdateXML.dll (EFW folder, v4.0.0.0)
+-->
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="MAXConnector.Sample" type="win32"/>
+
+  <!-- comClass registration handled via HKCU per-user registration.
+       MaxUpdateXML.dll is loaded from \\Maxdev\c\EXACT\RMCLIENT\EFW where
+       all its VB6/COM dependencies reside alongside it. -->
+  <!--
+  <file name="MaxUpdateXML.dll">
+    <comClass
+      description="XMLWrapperClass"
+      clsid="{34E27738-7E0B-474F-AC7F-F767840B265B}"
+      threadingModel="Apartment"/>
+  </file>
+  -->
+</assembly>
